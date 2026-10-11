@@ -1,0 +1,25 @@
+{
+  "version": "1.0",
+  "hooks": {
+    "pre_tool_execution": [
+      {
+        "matcher": "run_command",
+        "description": "Ensure workspace integrity before running deployment or simulation commands."
+      }
+    ],
+    "post_edit_verification": [
+      {
+        "matcher": "*.py",
+        "command": "python -m py_compile $FILE_PATH",
+        "description": "Syntax check Python modules after modification."
+      }
+    ],
+    "telemetry_stream_monitor": [
+      {
+        "event": "on_kinesis_anomaly",
+        "action": "trigger_gemini_advisory",
+        "description": "When Kinesis stream detects >15°C temperature drop, trigger automated Gemini thermal assessment."
+      }
+    ]
+  }
+}

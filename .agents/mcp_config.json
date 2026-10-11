@@ -1,0 +1,29 @@
+{
+  "mcpServers": {
+    "thermal-routing-engine": {
+      "command": "python",
+      "args": ["-m", "backend.thermal_engine"],
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "description": "Calculates thermodynamic pinch analysis, pipe heat dissipation, CAPEX and LCOH for thermal pipelines."
+    },
+    "kinesis-telemetry-connector": {
+      "command": "python",
+      "args": ["-m", "backend.kinesis_pipeline"],
+      "env": {
+        "PYTHONPATH": ".",
+        "AWS_REGION": "us-east-1"
+      },
+      "description": "Ingests and reads real-time exhaust temperatures from Amazon Kinesis Data Streams shards."
+    },
+    "gemini-context-aggregator": {
+      "command": "python",
+      "args": ["-m", "backend.gemini_service"],
+      "env": {
+        "PYTHONPATH": "."
+      },
+      "description": "Feeds live Kinesis streams and routing solutions into Google Gemini model."
+    }
+  }
+}

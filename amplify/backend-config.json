@@ -1,0 +1,23 @@
+{
+  "api": {
+    "ThermalMatchApi": {
+      "service": "API Gateway",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": []
+    }
+  },
+  "analytics": {
+    "ThermalKinesisStream": {
+      "service": "Kinesis",
+      "providerPlugin": "awscloudformation",
+      "kinesisStreamName": "thermalmatch-exhaust-telemetry",
+      "shardCount": 4
+    }
+  },
+  "hosting": {
+    "amplifyhosting": {
+      "service": "amplifyhosting",
+      "type": "cicd"
+    }
+  }
+}

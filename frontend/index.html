@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ThermalMatch — B2B Industrial Heat Waste Exchange</title>
+  <meta name="description" content="Minimalist, intuitive B2B industrial heat waste exchange platform with real-time Amazon Kinesis streaming and Google Gemini AI in Indian Rupees (₹).">
+
+  <!-- Google Fonts: Outfit & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/static/styles.css?v=9">
+</head>
+<body>
+
+  <!-- Floating Main Dashboard Canvas Container -->
+  <div class="dashboard-wrapper">
+
+    <!-- 1. Left Icon Navigation Rail -->
+    <aside class="sidebar-rail">
+      <div class="sidebar-top">
+        <!-- Brand Logo Mark -->
+        <div class="brand-mark" title="ThermalMatch Industrial Exchange" onclick="switchMainTab('dashboard')">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/>
+          </svg>
+        </div>
+
+        <!-- Vertical Navigation Icons -->
+        <nav class="nav-icons-list">
+          <button class="nav-icon-btn active" id="rail-btn-dashboard" onclick="switchMainTab('dashboard')" title="Exchange Overview">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+            <span class="icon-label-sub">Overview</span>
+          </button>
+          <button class="nav-icon-btn" id="rail-btn-directory" onclick="switchTableView('table')" title="Pipeline Directory">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span class="icon-label-sub">Pipelines</span>
+          </button>
+          <button class="nav-icon-btn" id="rail-btn-map" onclick="switchTableView('map')" title="Dynamic Heat Map">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4z"/><path d="M8 2v16"/><path d="M16 6v16"/></svg>
+            <span class="icon-label-sub">Vector Map</span>
+          </button>
+          <button class="nav-icon-btn" id="rail-btn-kinesis" onclick="switchMainTab('kinesis')" title="Amazon Kinesis Stream">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            <span class="icon-label-sub">Streams</span>
+          </button>
+          <button class="nav-icon-btn" id="rail-btn-quicksight" onclick="openQuickSightModal()" title="QuickSight ESG Analytics">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            <span class="icon-label-sub">ESG Audit</span>
+          </button>
+          <button class="nav-icon-btn" id="rail-btn-gemini" onclick="openGeminiModal()" title="Google Gemini AI Advisor">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <span class="icon-label-sub">AI Advisor</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Sidebar Bottom Controls -->
+      <div class="sidebar-bottom">
+        <div class="settings-wrapper">
+          <button class="nav-icon-btn" id="settings-theme-btn" title="Theme Settings (Blue / Red)" onclick="toggleThemeDropdown(event)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span class="icon-label-sub">Theme</span>
+          </button>
+
+          <!-- Theme Selection Dropdown Popover -->
+          <div class="theme-dropdown-menu" id="theme-dropdown" onclick="event.stopPropagation()">
+            <div class="theme-dropdown-header">
+              <span class="theme-dropdown-title">Theme Palette</span>
+            </div>
+            
+            <!-- Option 1: Blue Based (Default) -->
+            <button type="button" class="theme-option-btn active" id="theme-opt-blue" onclick="setAppTheme('blue')">
+              <div class="theme-swatch-circle blue-swatch"></div>
+              <div class="theme-opt-info">
+                <span class="theme-opt-name">Blue based</span>
+                <span class="theme-opt-badge default-badge">Default</span>
+              </div>
+              <svg class="theme-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            </button>
+
+            <!-- Option 2: Red Based -->
+            <button type="button" class="theme-option-btn" id="theme-opt-red" onclick="setAppTheme('red')">
+              <div class="theme-swatch-circle red-swatch"></div>
+              <div class="theme-opt-info">
+                <span class="theme-opt-name">Red based</span>
+                <span class="theme-opt-badge thermal-badge">Thermal</span>
+              </div>
+              <svg class="theme-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 2. Main Content Canvas -->
+    <main class="main-stage">
+
+      <header class="top-header">
+        <div class="top-header-left">
+          <div class="header-breadcrumbs">
+            <span class="breadcrumb-district">Regional Industrial Corridor</span>
+            <span class="breadcrumb-separator">/</span>
+            <span class="breadcrumb-active" id="header-breadcrumb-active">Live Dashboard</span>
+          </div>
+          <div class="header-live-badge-pill" title="Amazon Kinesis SCADA Stream Real-Time Status">
+            <span class="pulse-beacon-cyan"></span>
+            <span id="header-grid-telemetry-text">4 Kinesis Shards Active · 74.8 MWt Online</span>
+          </div>
+        </div>
+
+        <div class="top-actions-right">
+          <!-- + Add Company Facility Button -->
+          <button class="btn-header-add-company" onclick="openAddFacilityModal()" title="Add / Register New Company Facility">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>+ Add Company</span>
+          </button>
+
+          <!-- Search Pill -->
+          <div class="search-pill-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="global-search-input" placeholder="Search facilities, zones, temperatures..." oninput="handleGlobalSearch(this.value)">
+            <span class="search-shortcut-badge">⌘F</span>
+          </div>
+
+          <!-- Notification Bell -->
+          <div class="action-icon-circle" title="Active Kinesis Shard Alerts" onclick="openGeminiModal()">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span class="action-badge-dot"></span>
+          </div>
+
+          <!-- Live Telemetry Status -->
+          <div class="action-icon-circle" title="Amazon Kinesis Data Streams Online" style="color:var(--accent-green);">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+
+          <!-- Interactive User Profile & Login Widget -->
+          <div class="user-profile-header-widget" id="user-profile-widget" onclick="toggleUserDropdown(event)" title="Click to change user or log in">
+            <div class="user-avatar-img" id="header-avatar-initials">FD</div>
+            <div class="user-header-details">
+              <span class="user-header-name" id="header-user-name">Facility Director</span>
+              <span class="user-header-role" id="header-user-role">Regional Grid Admin</span>
+            </div>
+            <svg class="user-dropdown-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+
+            <!-- User Dropdown Menu -->
+            <div class="user-dropdown-menu" id="user-dropdown-menu" onclick="event.stopPropagation()">
+              <div class="dropdown-user-info">
+                <strong id="dropdown-user-name">Facility Director</strong>
+                <span id="dropdown-user-email">director@thermalmatch.internal</span>
+              </div>
+              <div class="dropdown-divider"></div>
+              <div class="dropdown-menu-item" onclick="openLoginModal(event)">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                <span>Login / Change User</span>
+              </div>
+              <div class="dropdown-divider"></div>
+              <div class="dropdown-preset-heading">Quick Switch Role</div>
+              <div class="dropdown-role-btn" onclick="quickSwitchUser('Facility Director', 'Regional Grid Admin', 'director@thermalmatch.internal', 'FD', event)">
+                <span class="role-badge-dot" style="background:#06b6d4;"></span>
+                <span>Facility Director</span>
+              </div>
+              <div class="dropdown-role-btn" onclick="quickSwitchUser('Plant Manager', 'Company A (Data Center)', 'plant.a@thermalmatch.internal', 'PM', event)">
+                <span class="role-badge-dot" style="background:#f97316;"></span>
+                <span>Company A (Plant Manager)</span>
+              </div>
+              <div class="dropdown-role-btn" onclick="quickSwitchUser('Smelting Lead', 'Company B (Foundry)', 'smelting.b@thermalmatch.internal', 'SL', event)">
+                <span class="role-badge-dot" style="background:#ef4444;"></span>
+                <span>Company B (Smelting Lead)</span>
+              </div>
+              <div class="dropdown-role-btn" onclick="quickSwitchUser('ESG & Carbon Auditor', 'District Sustainability', 'esg.auditor@thermalmatch.internal', 'EA', event)">
+                <span class="role-badge-dot" style="background:#00a86b;"></span>
+                <span>ESG & Carbon Auditor</span>
+              </div>
+              <div class="dropdown-divider"></div>
+              <div class="dropdown-menu-item logout" onclick="handleLogout(event)">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                <span>Sign Out / Guest</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Greeting & Current Time Row (INR Focused) -->
+      <section class="greeting-section">
+        <div class="greeting-text-box">
+          <h1 id="greeting-title">Good afternoon, Facility Director!</h1>
+          <p id="greeting-sub">Displacing fossil fuels across <strong>Regional Industrial Corridor</strong>. <strong>5 industrial heat matches</strong> active.</p>
+        </div>
+
+        <div class="clock-widget-box">
+          <div class="clock-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Current time (IST)
+          </div>
+          <div class="clock-value" id="live-clock-text">12:10 PM</div>
+        </div>
+      </section>
+
+      <!-- Main Dashboard Grid Content -->
+      <div class="dashboard-content-body">
+
+        <!-- Top 3-Card Bento Row (Essential Industrial Metrics) -->
+        <section class="top-bento-grid">
+
+          <!-- Card 1: Live Thermal Generation & Donut Gauge -->
+          <div class="clean-card">
+            <div>
+              <div class="card-header-row">
+                <span class="card-title-txt">Live Heat Generation & Demand</span>
+                <span class="badge-pill-green" id="capacity-badge-pill">Capacity Available</span>
+              </div>
+              <div class="status-time-sub">Real-Time SCADA Telemetry (Kinesis Streams)</div>
+
+              <div class="telemetry-status-body">
+                <div class="status-left-details">
+                  <div class="status-indicator-line" id="status-line-producers">
+                    <span class="indicator-dot green"></span>
+                    <span id="status-text-producers"><strong>5/5 Producers</strong> streaming live (82°C – 260°C)</span>
+                  </div>
+                  <div class="status-indicator-line" id="status-line-consumers">
+                    <span class="indicator-dot" style="background:var(--primary-cyan);"></span>
+                    <span id="status-text-consumers"><strong>5/5 Consumers</strong> demanding heat (62°C – 130°C)</span>
+                  </div>
+                </div>
+
+                <!-- Donut Progress Ring -->
+                <div class="donut-gauge-container">
+                  <svg class="donut-gauge-svg" viewBox="0 0 80 80">
+                    <circle class="donut-gauge-bg" cx="40" cy="40" r="32"></circle>
+                    <circle class="donut-gauge-fill" id="donut-progress-ring" cx="40" cy="40" r="32"></circle>
+                  </svg>
+                  <div class="donut-gauge-text">
+                    <span class="donut-main-num" id="donut-number">55.8</span>
+                    <span class="donut-sub-lbl">MWt Flux</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="callout-blue-bar" id="live-hourly-savings-callout">
+              Displacing ₹4,27,500 / hr in natural gas & coal boiler fuel costs
+            </div>
+          </div>
+
+          <!-- Card 2: Hourly Waste Heat Recovery Profile -->
+          <div class="clean-card">
+            <div>
+              <div class="card-header-row">
+                <span class="card-title-txt">Hourly Waste Heat Recovery</span>
+                <div class="badge-pill-select">
+                  <span>Today</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                </div>
+              </div>
+
+              <div class="chart-meta-row">
+                <div class="chart-legend-row">
+                  <div class="legend-chip">
+                    <span class="indicator-dot green"></span>
+                    <span>Normal Load</span>
+                  </div>
+                  <div class="legend-chip">
+                    <span class="indicator-dot" style="background:#f59e0b;"></span>
+                    <span>Peak Recovery Window</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="chart-subtitle-callout" id="chart-recovery-callout">
+                <span style="color:#f59e0b;">●</span>
+                <span id="chart-recovery-callout-text">Live: Optimal thermal dispatch window at 2:00 PM</span>
+              </div>
+
+              <!-- Sleek Bar Chart -->
+              <div class="hourly-bars-container" id="hourly-bars-track">
+                <div class="bar-col" title="12:00 PM: 28 MWt"><div class="bar-pill low" style="height: 35%;"></div></div>
+                <div class="bar-col" title="12:15 PM: 34 MWt"><div class="bar-pill low" style="height: 42%;"></div></div>
+                <div class="bar-col" title="12:30 PM: 40 MWt"><div class="bar-pill" style="height: 48%;"></div></div>
+                <div class="bar-col" title="12:45 PM: 45 MWt"><div class="bar-pill" style="height: 55%;"></div></div>
+                <div class="bar-col" title="1:00 PM: 50 MWt"><div class="bar-pill" style="height: 62%;"></div></div>
+                <div class="bar-col" title="1:15 PM: 58 MWt"><div class="bar-pill" style="height: 70%;"></div></div>
+                <div class="bar-col" title="1:30 PM: 64 MWt"><div class="bar-pill" style="height: 78%;"></div></div>
+                <div class="bar-col" title="1:45 PM: 72 MWt"><div class="bar-pill" style="height: 85%;"></div></div>
+                <div class="bar-col" title="2:00 PM: 82 MWt (Peak Recovery)"><div class="bar-pill peak" style="height: 94%;"></div></div>
+                <div class="bar-col" title="2:15 PM: 75 MWt"><div class="bar-pill" style="height: 88%;"></div></div>
+                <div class="bar-col" title="2:30 PM: 66 MWt"><div class="bar-pill" style="height: 80%;"></div></div>
+                <div class="bar-col" title="2:45 PM: 54 MWt"><div class="bar-pill" style="height: 65%;"></div></div>
+                <div class="bar-col" title="3:00 PM: 48 MWt"><div class="bar-pill" style="height: 55%;"></div></div>
+              </div>
+              <div class="bar-x-labels">
+                <span>12 PM</span>
+                <span>1 PM</span>
+                <span>2 PM</span>
+                <span>3 PM</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3: Instant Financial Savings & Dispatch Action -->
+          <div class="clean-card">
+            <div>
+              <div class="card-header-row">
+                <span class="card-title-txt">Real-Time Economic Savings</span>
+                <span class="badge-pill-green" style="background:#e6f8f0; color:#00a86b;">High Value</span>
+              </div>
+
+              <div class="card-alert-body">
+                <div class="alert-icon-duo">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                  <span style="font-size:1.6rem; font-weight:700; color:var(--primary-blue); font-family:var(--font-sans);">₹</span>
+                </div>
+                <div class="alert-heading" id="alert-savings-heading">Peak Savings Active!</div>
+                <div class="alert-desc" id="alert-savings-desc">Recovering waste heat saves up to <strong>₹46.89 Crore / yr</strong> across all industrial connections.</div>
+              </div>
+            </div>
+
+            <button class="btn-primary-blue-full" id="btn-quick-book" onclick="openGeminiModal()">
+              <span>Consult Gemini AI Advisor</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </button>
+          </div>
+
+        </section>
+
+        <!-- Lower Section: Large Table Card & Right Eco Cards -->
+        <section class="bottom-bento-grid">
+
+          <!-- Left Large Card: Thermal Exchange Pipeline Directory -->
+          <div class="clean-card table-card-wrap">
+            <!-- Header Row -->
+            <div class="table-top-bar">
+              <div class="table-title-group">
+                <span class="table-main-heading">Industrial Thermal Exchange Directory</span>
+                <div class="view-mode-pill-group">
+                  <button class="view-mode-btn active" id="btn-view-table" onclick="switchTableView('table')">Directory Table</button>
+                  <button class="view-mode-btn" id="btn-view-map" onclick="switchTableView('map')">Dynamic Vector Map</button>
+                </div>
+              </div>
+
+              <div style="display:flex; align-items:center; gap:10px;">
+                <button class="btn-add-facility-pill" onclick="openAddFacilityModal()" title="Add / Register New Company Facility">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  <span>Add Company</span>
+                </button>
+                <div class="table-search-input">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                  <input type="text" id="facility-filter-search" placeholder="Filter facilities..." oninput="filterTableRooms(this.value)">
+                </div>
+              </div>
+            </div>
+
+            <!-- Filters Row (Industrial Zones, Temperature Grade, Carrier Medium) -->
+            <div class="filter-dropdowns-row">
+              <div class="filter-input-col">
+                <label>Industrial District Zones <span class="req-star">*</span></label>
+                <select class="filter-custom-select" id="filter-floor-select" onchange="filterTableByFloor(this.value)">
+                  <option value="all">All Regional Zones</option>
+                  <option value="Tech Sector">Regional Tech & Cloud Corridor</option>
+                  <option value="Smelting Sector">Regional Smelting & Foundry Zone</option>
+                  <option value="Agro Belt">Regional Agro & Floriculture Belt</option>
+                  <option value="Chemical Belt">Regional Chemical Corridor</option>
+                  <option value="Manufacturing Hub">Regional Manufacturing Hub</option>
+                </select>
+              </div>
+
+              <div class="filter-input-col">
+                <label>Temperature Grade <span class="req-star">*</span></label>
+                <select class="filter-custom-select" id="filter-capacity-select" onchange="filterTableByGrade(this.value)">
+                  <option value="all">All Temperature Grades</option>
+                  <option value="low">Low Grade (&lt; 75°C)</option>
+                  <option value="high">High Grade (&gt; 75°C)</option>
+                </select>
+              </div>
+
+              <div class="filter-input-col">
+                <label>Piping Standard <span class="req-star">*</span></label>
+                <div class="filter-custom-select">
+                  <span>EN 253 Bonded Polyurethane</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                </div>
+              </div>
+
+              <div class="filter-input-col">
+                <label>Currency Baseline <span class="req-star">*</span></label>
+                <div class="filter-custom-select">
+                  <span style="font-weight:600; color:var(--primary-cyan-hover);">₹ INR (Indian Rupees)</span>
+                  <span style="font-family:var(--font-mono); font-size:0.75rem; color:var(--text-muted);">₹84 / USD</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Table Container -->
+            <div class="data-table-container" id="corporate-table-wrap">
+              <table class="corporate-table">
+                <thead>
+                  <tr>
+                    <th style="width: 38px;"></th>
+                    <th>Thermal Pipeline Route (Source ➔ Sink)</th>
+                    <th>Zone & Distance</th>
+                    <th>Exhaust & Delivered Temp</th>
+                    <th>Capacity & Flux</th>
+                    <th>Net Savings (₹)</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="rooms-table-body">
+                  <!-- Populated via JS with Indian Rupees (₹) and actual facilities -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Dynamic Map View (Toggleable inside this card) -->
+            <div class="map-embed-view" id="map-embed-container">
+              <div class="map-floating-filter-pill" id="map-floating-filter-pill">
+                <span class="indicator-dot green"></span>
+                <span id="map-filter-pill-text">All Temperature Grades · 5 Active Routes</span>
+              </div>
+              <svg id="district-map-svg" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid meet" style="width:100%; height:100%;">
+                <defs>
+                  <linearGradient id="pipe-gradient-high" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#f97316" stop-opacity="0.9" />
+                    <stop offset="100%" stop-color="#06b6d4" stop-opacity="0.9" />
+                  </linearGradient>
+                  <linearGradient id="pipe-gradient-med" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#fb923c" stop-opacity="0.8" />
+                    <stop offset="100%" stop-color="#14b8a6" stop-opacity="0.8" />
+                  </linearGradient>
+                  <radialGradient id="producer-glow">
+                    <stop offset="0%" stop-color="#f97316" stop-opacity="0.8"/>
+                    <stop offset="100%" stop-color="#f97316" stop-opacity="0"/>
+                  </radialGradient>
+                  <radialGradient id="consumer-glow">
+                    <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.8"/>
+                    <stop offset="100%" stop-color="#06b6d4" stop-opacity="0"/>
+                  </radialGradient>
+                </defs>
+                <g id="map-grid-layer"></g>
+                <g id="map-topo-layer"></g>
+                <g id="map-pipelines-layer"></g>
+                <g id="map-facilities-layer"></g>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Right Column Cards (Only Necessary Industrial Highlights) -->
+          <div class="right-cards-col">
+
+            <!-- Card 5a: Avoid Carbon & Claim ESG Credits -->
+            <div class="clean-card eco-reward-card">
+              <div class="eco-icon-wrap">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+              </div>
+
+              <div>
+                <div class="eco-title-lg" id="eco-carbon-title">Avoid Carbon.<br>Claim ESG Credits.</div>
+                <div class="eco-sub-txt" id="eco-carbon-desc" style="margin-top: 0.4rem;">
+                  <strong>1,08,546 tCO₂e / yr</strong> avoided. Eligible for <strong>₹68.4 Crore</strong> in verified carbon credits under the Green Heat Protocol.
+                </div>
+              </div>
+
+              <button class="btn-secondary-light-full" onclick="openQuickSightModal()">
+                <span>View ESG Carbon Ledger</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
+
+            <!-- Card 5b: Real-Time Amazon Kinesis Stream Telemetry -->
+            <div class="clean-card mini-telemetry-status-card">
+              <div class="mini-chart-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              </div>
+              <div style="flex:1;">
+                <div style="font-size:0.85rem; font-weight:700; color:#0f172a;">Kinesis Stream Telemetry</div>
+                <div style="font-size:0.74rem; color:var(--text-muted);" id="kinesis-mini-label">4 Shards Active · Ingest 99.98%</div>
+              </div>
+              <button class="btn-book-action" onclick="openGeminiModal()">
+                Live SCADA
+              </button>
+            </div>
+
+          </div>
+
+        </section>
+
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Google Gemini Generative AI Assistant Modal (Light Mode Styled in INR) -->
+  <div id="gemini-modal" class="modal-overlay-blur" onclick="closeGeminiModal(event)">
+    <div class="modal-clean-box" onclick="event.stopPropagation()">
+      <div class="modal-clean-header">
+        <div class="modal-title-row">
+          <div class="brand-mark" style="width:32px; height:32px;">
+            <svg viewBox="0 0 24 24" style="width:16px; height:16px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <div>
+            <h3>Gemini AI Thermal Advisor</h3>
+            <span style="font-size:0.7rem; color:var(--text-muted); font-family:var(--font-mono);">
+              Google Gemini Enterprise Engine · Currency: ₹ (INR)
+            </span>
+          </div>
+        </div>
+        <button class="modal-close-cross" onclick="closeGeminiModal()">&times;</button>
+      </div>
+
+      <div class="modal-chat-body" id="gemini-chat-history">
+        <div class="chat-bubble-clean assistant">
+          <div class="chat-bubble-avatar">AI</div>
+          <div class="chat-bubble-card">
+            Namaste & Welcome! I am your <strong>ThermalMatch Gemini AI Advisor</strong>, initialized with real-time Amazon Kinesis telemetry and thermodynamic routing engines.
+            <br><br>
+            All financial projections and levelized costs are calculated in <strong>Indian Rupees (₹)</strong> based on EN 253 pre-insulated pipe standards and local commercial boiler fuel displacement.
+            <br><br>
+            <em>Example query: "What is the most cost-effective way to utilize 80°C exhaust air in this district?"</em>
+          </div>
+        </div>
+      </div>
+
+      <form class="modal-input-bar" id="gemini-chat-form" onsubmit="submitGeminiQuery(event)">
+        <input type="text" id="gemini-query-input" class="chat-text-input" placeholder="Ask about ₹ savings, 80°C exhaust air utilization, or pipeline payback..." autocomplete="off">
+        <button type="submit" class="chat-send-btn">Consult (₹)</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- QuickSight Analytics Modal (Executive ESG Ledger in INR) -->
+  <div id="quicksight-modal" class="modal-overlay-blur" onclick="closeQuickSightModal(event)">
+    <div class="modal-clean-box" onclick="event.stopPropagation()">
+      <div class="modal-clean-header">
+        <div class="modal-title-row">
+          <div class="brand-mark" style="width:34px; height:34px; background:linear-gradient(135deg, var(--primary-cyan), var(--accent-green)); border-radius:8px;">
+            <svg viewBox="0 0 24 24" style="width:18px; height:18px; stroke:#ffffff; fill:none; stroke-width:2;"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          </div>
+          <div>
+            <h3>Amazon QuickSight Executive ESG Ledger</h3>
+            <span style="font-size:0.72rem; color:var(--text-muted); font-family:var(--font-mono);">
+              Signed STS AssumeRole Embed · Tenant RLS Scoped (Regional Industrial Corridor) · Currency: ₹ (INR Crores)
+            </span>
+          </div>
+        </div>
+        <button class="modal-close-cross" onclick="closeQuickSightModal()">&times;</button>
+      </div>
+
+      <div class="qs-body-container">
+        <!-- Two Side-by-Side Executive Charts -->
+        <div class="qs-charts-grid">
+          
+          <!-- Chart A: Thermodynamic Heat Load Duration Curve -->
+          <div class="qs-chart-card">
+            <div class="qs-chart-topline">
+              <div class="qs-chart-title">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--primary-cyan)" stroke-width="2.2"><path d="M18 20V10M12 20V4M6 20v14"/></svg>
+                <span>Heat Load Duration (8,760 Hours)</span>
+              </div>
+              <span class="qs-badge-pill cyan">100% Waste Heat Covered</span>
+            </div>
+
+            <div class="qs-svg-wrap">
+              <svg viewBox="0 0 500 220">
+                <defs>
+                  <linearGradient id="hldcAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.35"/>
+                    <stop offset="100%" stop-color="#06b6d4" stop-opacity="0.03"/>
+                  </linearGradient>
+                </defs>
+
+                <!-- Gridlines & Y-Axis (MWt) -->
+                <line x1="55" y1="25" x2="475" y2="25" stroke="#f1f5f9" stroke-dasharray="3,3" stroke-width="1"/>
+                <text x="12" y="29" fill="#94a3b8" font-size="8.5" font-family="JetBrains Mono">80 MWt</text>
+
+                <line x1="55" y1="62" x2="475" y2="62" stroke="#f1f5f9" stroke-dasharray="3,3" stroke-width="1"/>
+                <text x="12" y="66" fill="#94a3b8" font-size="8.5" font-family="JetBrains Mono">60 MWt</text>
+
+                <line x1="55" y1="100" x2="475" y2="100" stroke="#f1f5f9" stroke-dasharray="3,3" stroke-width="1"/>
+                <text x="12" y="104" fill="#94a3b8" font-size="8.5" font-family="JetBrains Mono">40 MWt</text>
+
+                <line x1="55" y1="137" x2="475" y2="137" stroke="#f1f5f9" stroke-dasharray="3,3" stroke-width="1"/>
+                <text x="12" y="141" fill="#94a3b8" font-size="8.5" font-family="JetBrains Mono">20 MWt</text>
+
+                <!-- Baseline y=0 -->
+                <line x1="55" y1="175" x2="475" y2="175" stroke="#cbd5e1" stroke-width="1.2"/>
+                <text x="18" y="179" fill="#64748b" font-size="8.5" font-family="JetBrains Mono">0 MWt</text>
+
+                <!-- Shaded Area Under District Demand Curve -->
+                <path d="M 55 73.4 C 130 80, 200 90, 280 98 C 350 105, 420 114, 475 116.9 L 475 175 L 55 175 Z" fill="url(#hldcAreaGrad)"/>
+
+                <!-- Waste Heat Supply Envelope (Orange dashed line) -->
+                <path d="M 55 47.5 C 130 50, 210 52, 290 56 C 370 60, 430 62, 475 63.4" fill="none" stroke="#f97316" stroke-width="2" stroke-dasharray="5,4"/>
+                <text x="250" y="46" id="qs-supply-envelope-text" fill="#ea580c" font-size="8" font-family="Outfit" font-weight="600">Waste Heat Supply Envelope (68 MWt Peak)</text>
+
+                <!-- District Demand Load Duration Curve (Cyan line) -->
+                <path d="M 55 73.4 C 130 80, 200 90, 280 98 C 350 105, 420 114, 475 116.9" fill="none" stroke="#06b6d4" stroke-width="2.8"/>
+
+                <!-- Milestone Points & Labels -->
+                <circle cx="55" cy="73.4" r="4.5" fill="#0891b2" stroke="#ffffff" stroke-width="2"/>
+                <rect x="64" y="62" width="86" height="18" rx="4" fill="#ecfeff" stroke="rgba(6, 182, 212, 0.4)" stroke-width="1"/>
+                <text x="70" y="74" fill="#0891b2" font-size="8.5" font-family="Outfit" font-weight="700">Peak: 54.2 MWt</text>
+
+                <circle cx="475" cy="116.9" r="4.5" fill="#0891b2" stroke="#ffffff" stroke-width="2"/>
+                <rect x="366" y="105" width="102" height="18" rx="4" fill="#ecfeff" stroke="rgba(6, 182, 212, 0.4)" stroke-width="1"/>
+                <text x="372" y="117" fill="#0891b2" font-size="8.5" font-family="Outfit" font-weight="700">Baseload: 31.0 MWt</text>
+
+                <!-- X-Axis Hours Ticks -->
+                <line x1="55" y1="175" x2="55" y2="180" stroke="#94a3b8" stroke-width="1"/>
+                <text x="55" y="191" fill="#64748b" font-size="8" font-family="JetBrains Mono" text-anchor="middle">0h</text>
+
+                <line x1="151" y1="175" x2="151" y2="180" stroke="#94a3b8" stroke-width="1"/>
+                <text x="151" y="191" fill="#64748b" font-size="8" font-family="JetBrains Mono" text-anchor="middle">2,000h</text>
+
+                <line x1="247" y1="175" x2="247" y2="180" stroke="#94a3b8" stroke-width="1"/>
+                <text x="247" y="191" fill="#64748b" font-size="8" font-family="JetBrains Mono" text-anchor="middle">4,000h</text>
+
+                <line x1="343" y1="175" x2="343" y2="180" stroke="#94a3b8" stroke-width="1"/>
+                <text x="343" y="191" fill="#64748b" font-size="8" font-family="JetBrains Mono" text-anchor="middle">6,000h</text>
+
+                <line x1="475" y1="175" x2="475" y2="180" stroke="#94a3b8" stroke-width="1"/>
+                <text x="475" y="191" fill="#64748b" font-size="8" font-family="JetBrains Mono" text-anchor="middle">8,760h</text>
+
+                <text x="260" y="210" fill="#94a3b8" font-size="7.5" font-family="Outfit" text-anchor="middle">Full-Year Operating Hours (8,760 hrs / yr)</text>
+              </svg>
+            </div>
+
+            <!-- Legend Row -->
+            <div class="qs-legend-row">
+              <div class="qs-legend-item">
+                <span class="qs-legend-line" style="background:#06b6d4;"></span>
+                <span>District Demand Curve</span>
+              </div>
+              <div class="qs-legend-item">
+                <span class="qs-legend-line" style="border-top:2px dashed #f97316; height:0;"></span>
+                <span>Recoverable Waste Supply</span>
+              </div>
+              <div class="qs-legend-item">
+                <span class="qs-legend-dot" style="background:#a5f3fc;"></span>
+                <span>100% Fossil Offset</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chart B: Cumulative Cash Flow & Annual Net Profit Waterfall -->
+          <div class="qs-chart-card">
+            <div class="qs-chart-topline">
+              <div class="qs-chart-title">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="2.2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                <span>Cumulative Cash Flow (₹ Crores)</span>
+              </div>
+              <span class="qs-badge-pill green">★ Payback: 2.87 Yrs</span>
+            </div>
+
+            <div class="qs-svg-wrap">
+              <svg viewBox="0 0 500 220">
+                <!-- Horizontal Gridlines & Y-Axis (₹ Crores) -->
+                <line x1="55" y1="38" x2="475" y2="38" stroke="#f1f5f9" stroke-dasharray="3,3" stroke-width="1"/>
+                <text x="8" y="41" fill="#94a3b8" font-size="8.5" font-family="JetBrains Mono">+₹20 Cr</text>
+
+                <line x1="55" y1="62" x2="475" y2="62" stroke="#f1f5f9" stroke-dasharray="3,3" stroke-width="1"/>
+                <text x="8" y="65" fill="#94a3b8" font-size="8.5" font-family="JetBrains Mono">+₹10 Cr</text>
+
+                <!-- Bold Zero Baseline -->
+                <line x1="55" y1="86" x2="475" y2="86" stroke="#94a3b8" stroke-width="1.5"/>
+                <text x="18" y="89" fill="#475569" font-size="8.5" font-family="JetBrains Mono" font-weight="700">₹0 Cr</text>
+
+                <line x1="55" y1="110" x2="475" y2="110" stroke="#f1f5f9" stroke-dasharray="3,3" stroke-width="1"/>
+                <text x="8" y="113" fill="#94a3b8" font-size="8.5" font-family="JetBrains Mono">-₹10 Cr</text>
+
+                <line x1="55" y1="134" x2="475" y2="134" stroke="#f1f5f9" stroke-dasharray="3,3" stroke-width="1"/>
+                <text x="8" y="137" fill="#94a3b8" font-size="8.5" font-family="JetBrains Mono">-₹20 Cr</text>
+
+                <line x1="55" y1="172" x2="475" y2="172" stroke="#f1f5f9" stroke-dasharray="3,3" stroke-width="1"/>
+                <text x="6" y="175" fill="#ea3a4b" font-size="8.5" font-family="JetBrains Mono" font-weight="600">-₹35.7</text>
+
+                <!-- 1. Bar: Yr 0 (Initial CAPEX Outlay) -->
+                <rect x="71" y="86" width="34" height="86" rx="4" fill="#ea3a4b"/>
+                <text x="88" y="156" fill="#ffffff" font-size="8.5" font-family="Outfit" font-weight="700" text-anchor="middle">-₹35.7</text>
+                <text x="88" y="196" fill="#0f172a" font-size="9" font-family="Outfit" font-weight="700" text-anchor="middle">Yr 0</text>
+                <text x="88" y="207" fill="#94a3b8" font-size="7" font-family="JetBrains Mono" text-anchor="middle">CAPEX</text>
+
+                <!-- 2. Bar: Yr 1 (Annual Savings) -->
+                <rect x="141" y="57" width="34" height="29" rx="4" fill="#06b6d4"/>
+                <text x="158" y="50" fill="#0891b2" font-size="8.5" font-family="Outfit" font-weight="700" text-anchor="middle">+₹11.9</text>
+                <text x="158" y="196" fill="#0f172a" font-size="9" font-family="Outfit" font-weight="600" text-anchor="middle">Yr 1</text>
+                <text x="158" y="207" fill="#94a3b8" font-size="7" font-family="JetBrains Mono" text-anchor="middle">+₹11.9 Cr</text>
+
+                <!-- 3. Bar: Yr 2 (Annual Savings) -->
+                <rect x="211" y="56" width="34" height="30" rx="4" fill="#06b6d4"/>
+                <text x="228" y="49" fill="#0891b2" font-size="8.5" font-family="Outfit" font-weight="700" text-anchor="middle">+₹12.2</text>
+                <text x="228" y="196" fill="#0f172a" font-size="9" font-family="Outfit" font-weight="600" text-anchor="middle">Yr 2</text>
+                <text x="228" y="207" fill="#94a3b8" font-size="7" font-family="JetBrains Mono" text-anchor="middle">+₹12.2 Cr</text>
+
+                <!-- 4. Bar: Yr 3 (Payback Achieved Milestone) -->
+                <rect x="281" y="55" width="34" height="31" rx="4" fill="#00a86b" stroke="#008753" stroke-width="1.5"/>
+                <text x="298" y="38" fill="#00a86b" font-size="7.5" font-family="Outfit" font-weight="800" text-anchor="middle">★ Payback</text>
+                <text x="298" y="48" fill="#00a86b" font-size="8.5" font-family="Outfit" font-weight="700" text-anchor="middle">+₹12.4</text>
+                <text x="298" y="196" fill="#00a86b" font-size="9" font-family="Outfit" font-weight="700" text-anchor="middle">Yr 3</text>
+                <text x="298" y="207" fill="#00a86b" font-size="7" font-family="JetBrains Mono" font-weight="600" text-anchor="middle">Breakeven</text>
+
+                <!-- 5. Bar: Yr 4 (Net Profit Surplus) -->
+                <rect x="351" y="54" width="34" height="32" rx="4" fill="#00a86b"/>
+                <text x="368" y="47" fill="#00a86b" font-size="8.5" font-family="Outfit" font-weight="700" text-anchor="middle">+₹12.8</text>
+                <text x="368" y="196" fill="#0f172a" font-size="9" font-family="Outfit" font-weight="600" text-anchor="middle">Yr 4</text>
+                <text x="368" y="207" fill="#94a3b8" font-size="7" font-family="JetBrains Mono" text-anchor="middle">Surplus</text>
+
+                <!-- 6. Bar: Yr 5 (Net Profit Surplus) -->
+                <rect x="421" y="53" width="34" height="33" rx="4" fill="#059669"/>
+                <text x="438" y="46" fill="#059669" font-size="8.5" font-family="Outfit" font-weight="700" text-anchor="middle">+₹13.1</text>
+                <text x="438" y="196" fill="#0f172a" font-size="9" font-family="Outfit" font-weight="600" text-anchor="middle">Yr 5</text>
+                <text x="438" y="207" fill="#94a3b8" font-size="7" font-family="JetBrains Mono" text-anchor="middle">+₹26.7 Cr Tot</text>
+
+                <!-- Cumulative Net Balance Line (Orange/Amber) -->
+                <path d="M 88 172 L 158 143 L 228 114 L 289 86 L 298 84 L 368 53 L 438 22" fill="none" stroke="#f59e0b" stroke-width="2.5"/>
+
+                <!-- Cumulative Nodes -->
+                <circle cx="88" cy="172" r="3.5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.5"/>
+                <circle cx="158" cy="143" r="3.5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.5"/>
+                <circle cx="228" cy="114" r="3.5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.5"/>
+                <!-- Breakeven milestone cross -->
+                <circle cx="289" cy="86" r="5" fill="#00a86b" stroke="#ffffff" stroke-width="2"/>
+                <circle cx="298" cy="84" r="3.5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.5"/>
+                <circle cx="368" cy="53" r="3.5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.5"/>
+                <circle cx="438" cy="22" r="4" fill="#00a86b" stroke="#ffffff" stroke-width="2"/>
+              </svg>
+            </div>
+
+            <!-- Legend Row -->
+            <div class="qs-legend-row">
+              <div class="qs-legend-item">
+                <span class="qs-legend-dot" style="background:#ea3a4b;"></span>
+                <span>CAPEX Outlay (-₹35.7 Cr)</span>
+              </div>
+              <div class="qs-legend-item">
+                <span class="qs-legend-dot" style="background:#06b6d4;"></span>
+                <span>Annual Cash Flow (+₹12.4 Cr)</span>
+              </div>
+              <div class="qs-legend-item">
+                <span class="qs-legend-line" style="background:#f59e0b;"></span>
+                <span>Cumulative Net (Breakeven Yr 2.9)</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Executive Financial & ESG Summary Strip -->
+        <div class="qs-kpis-strip">
+          <div class="qs-kpi-block">
+            <span class="qs-kpi-label">Total Installed CAPEX</span>
+            <span class="qs-kpi-value" style="color:#ea3a4b;">₹35.70 Cr</span>
+            <span class="qs-kpi-sub">EN 253 Pre-Insulated Network</span>
+          </div>
+          <div class="qs-kpi-block">
+            <span class="qs-kpi-label">Annual Net Savings</span>
+            <span class="qs-kpi-value" style="color:#0891b2;">₹12.43 Cr/yr</span>
+            <span class="qs-kpi-sub">₹1,41,895 / operational hour</span>
+          </div>
+          <div class="qs-kpi-block">
+            <span class="qs-kpi-label">Payback Period</span>
+            <span class="qs-kpi-value" style="color:#00a86b;">2.87 Years</span>
+            <span class="qs-kpi-sub">Achieved in Q3 FY27</span>
+          </div>
+          <div class="qs-kpi-block">
+            <span class="qs-kpi-label">5-Yr Cumulative Surplus</span>
+            <span class="qs-kpi-value" style="color:#00a86b;">+₹26.68 Cr</span>
+            <span class="qs-kpi-sub">Project IRR: 31.4% · 18,450 tCO₂e</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Add / Register Company Facility Modal -->
+  <div id="add-facility-modal" class="modal-overlay-blur" onclick="if(event.target===this)closeAddFacilityModal()">
+    <div class="modal-clean-box" onclick="event.stopPropagation()" style="width: 680px; max-width: 95vw; height: auto; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden;">
+      <div class="modal-clean-header">
+        <div class="modal-title-row">
+          <div class="brand-mark" style="width:36px; height:36px; background:linear-gradient(135deg, var(--primary-cyan), #0891b2); border-radius:8px;">
+            <svg viewBox="0 0 24 24" style="width:20px; height:20px; stroke:#ffffff; fill:none; stroke-width:2.2;"><path d="M3 21h18M5 21V7l8-4v18M13 21V11l6 3v7"/></svg>
+          </div>
+          <div>
+            <h3>Register Industrial Facility</h3>
+            <span style="font-size:0.75rem; color:var(--text-muted); font-family:var(--font-mono);">
+              Regional Industrial Corridor · Live Telemetry & Vector GIS Registration
+            </span>
+          </div>
+        </div>
+        <button class="modal-close-cross" onclick="closeAddFacilityModal()">&times;</button>
+      </div>
+
+      <form id="add-facility-form" onsubmit="handleCreateFacility(event)" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; overflow-y: auto; flex: 1;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group-field">
+            <label style="display:block; font-size:0.75rem; font-weight:600; margin-bottom:4px; color:var(--text-primary);">Company Name <span style="color:#ef4444;">*</span></label>
+            <input type="text" id="new-fac-name" class="modal-input-field" placeholder="e.g. Company K" required style="width:100%; padding:8px 12px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.14); border-radius:6px; color:inherit; font-family:inherit;">
+          </div>
+          <div class="form-group-field">
+            <label style="display:block; font-size:0.75rem; font-weight:600; margin-bottom:4px; color:var(--text-primary);">Facility Role / Type <span style="color:#ef4444;">*</span></label>
+            <select id="new-fac-type" class="modal-input-field" style="width:100%; padding:8px 12px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.14); border-radius:6px; color:inherit; font-family:inherit;">
+              <option value="PRODUCER">Heat Producer (Exhaust Heat Source)</option>
+              <option value="CONSUMER">Heat Consumer (Thermal Demand Sink)</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group-field">
+            <label style="display:block; font-size:0.75rem; font-weight:600; margin-bottom:4px; color:var(--text-primary);">Industry Sector <span style="color:#ef4444;">*</span></label>
+            <select id="new-fac-sector" class="modal-input-field" style="width:100%; padding:8px 12px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.14); border-radius:6px; color:inherit; font-family:inherit;">
+              <option value="HyperScale Data Center">HyperScale Data Center</option>
+              <option value="Metallurgical Foundry">Metallurgical Foundry</option>
+              <option value="Precision Glass Works">Precision Glass Works</option>
+              <option value="Petrochemical Processing">Petrochemical Processing</option>
+              <option value="Agricultural Grain & Produce Drying">Agricultural Grain & Produce Drying</option>
+              <option value="Municipal District Thermal Network">Municipal District Thermal Network</option>
+              <option value="Paper & Packaging Pulping">Paper & Packaging Pulping</option>
+              <option value="Industrial Brewing & Distillation">Industrial Brewing & Distillation</option>
+            </select>
+          </div>
+          <div class="form-group-field">
+            <label style="display:block; font-size:0.75rem; font-weight:600; margin-bottom:4px; color:var(--text-primary);">Regional District Zone <span style="color:#ef4444;">*</span></label>
+            <select id="new-fac-zone" class="modal-input-field" style="width:100%; padding:8px 12px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.14); border-radius:6px; color:inherit; font-family:inherit;">
+              <option value="Tech Sector">Regional Tech & Cloud Corridor</option>
+              <option value="Smelting Sector">Regional Smelting & Foundry Zone</option>
+              <option value="Agro Belt">Regional Agro & Floriculture Belt</option>
+              <option value="Chemical Belt">Regional Chemical Corridor</option>
+              <option value="Manufacturing Hub">Regional Manufacturing Hub</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group-field">
+            <label style="display:block; font-size:0.75rem; font-weight:600; margin-bottom:4px; color:var(--text-primary);">Location Latitude (18.67 - 18.78) <span style="color:#ef4444;">*</span></label>
+            <input type="number" step="0.0001" id="new-fac-lat" class="modal-input-field" placeholder="18.7400" required style="width:100%; padding:8px 12px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.14); border-radius:6px; color:inherit; font-family:inherit;">
+          </div>
+          <div class="form-group-field">
+            <label style="display:block; font-size:0.75rem; font-weight:600; margin-bottom:4px; color:var(--text-primary);">Location Longitude (73.70 - 73.85) <span style="color:#ef4444;">*</span></label>
+            <input type="number" step="0.0001" id="new-fac-lng" class="modal-input-field" placeholder="73.7600" required style="width:100%; padding:8px 12px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.14); border-radius:6px; color:inherit; font-family:inherit;">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+          <div class="form-group-field">
+            <label style="display:block; font-size:0.75rem; font-weight:600; margin-bottom:4px; color:var(--text-primary);">Operating Temp (°C) <span style="color:#ef4444;">*</span></label>
+            <input type="number" step="0.1" id="new-fac-temp" class="modal-input-field" placeholder="95.0" required style="width:100%; padding:8px 12px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.14); border-radius:6px; color:inherit; font-family:inherit;">
+          </div>
+          <div class="form-group-field">
+            <label style="display:block; font-size:0.75rem; font-weight:600; margin-bottom:4px; color:var(--text-primary);">Mass Flow (kg/s) <span style="color:#ef4444;">*</span></label>
+            <input type="number" step="0.1" id="new-fac-flow" class="modal-input-field" placeholder="40.0" required style="width:100%; padding:8px 12px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.14); border-radius:6px; color:inherit; font-family:inherit;">
+          </div>
+          <div class="form-group-field">
+            <label style="display:block; font-size:0.75rem; font-weight:600; margin-bottom:4px; color:var(--text-primary);">Thermal Capacity (MWt) <span style="color:#ef4444;">*</span></label>
+            <input type="number" step="0.1" id="new-fac-capacity" class="modal-input-field" placeholder="8.5" required style="width:100%; padding:8px 12px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.14); border-radius:6px; color:inherit; font-family:inherit;">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
+          <div class="form-group-field">
+            <label style="display:block; font-size:0.75rem; font-weight:600; margin-bottom:4px; color:var(--text-primary);">Fluid Carrier Medium <span style="color:#ef4444;">*</span></label>
+            <select id="new-fac-fluid" class="modal-input-field" style="width:100%; padding:8px 12px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.14); border-radius:6px; color:inherit; font-family:inherit;">
+              <option value="Hot Water">Hot Water</option>
+              <option value="Pressurized High-Temp Water">Pressurized High-Temp Water</option>
+              <option value="Low-Pressure Saturated Steam">Low-Pressure Saturated Steam</option>
+              <option value="Clean Flue Gas / Exhaust Air">Clean Flue Gas / Exhaust Air</option>
+              <option value="Synthetic Thermal Fluid (Dowtherm)">Synthetic Thermal Fluid (Dowtherm)</option>
+            </select>
+          </div>
+          <div class="form-group-field">
+            <label style="display:block; font-size:0.75rem; font-weight:600; margin-bottom:4px; color:var(--text-primary);">Facility Operational Notes / Description</label>
+            <input type="text" id="new-fac-desc" class="modal-input-field" placeholder="e.g. Continuous heat exchange loop in Regional Industrial Corridor." style="width:100%; padding:8px 12px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.14); border-radius:6px; color:inherit; font-family:inherit;">
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:0.75rem; padding-top:1rem; border-top:1px solid rgba(255,255,255,0.08);">
+          <button type="button" class="btn-clean-ghost" onclick="closeAddFacilityModal()" style="padding:9px 18px; border-radius:6px; border:1px solid rgba(255,255,255,0.15); background:transparent; color:inherit; cursor:pointer;">Cancel</button>
+          <button type="submit" id="btn-submit-facility" class="btn-primary-blue-full" style="width:auto; padding:9px 24px; cursor:pointer;">Register Facility</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Login / Change User Modal -->
+  <div id="login-modal" class="modal-overlay-blur" onclick="if(event.target===this)closeLoginModal()">
+    <div class="modal-clean-box" onclick="event.stopPropagation()" style="width: 580px; max-width: 95vw; height: auto; max-height: 88vh; display: flex; flex-direction: column; overflow: hidden;">
+      <div class="modal-clean-header">
+        <div class="modal-title-row">
+          <div class="brand-mark" style="width:36px; height:36px; background:linear-gradient(135deg, var(--primary-cyan), #0891b2); border-radius:8px;">
+            <svg viewBox="0 0 24 24" style="width:20px; height:20px; stroke:#ffffff; fill:none; stroke-width:2.2;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div>
+            <h3>ThermalMatch Authentication</h3>
+            <span style="font-size:0.75rem; color:var(--text-muted); font-family:var(--font-mono);">
+              Change Active User Account · Scoped Access Control
+            </span>
+          </div>
+        </div>
+        <button class="modal-close-cross" onclick="closeLoginModal()">&times;</button>
+      </div>
+
+      <div style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; overflow-y: auto; flex: 1;">
+        <!-- Quick Select Roles Section -->
+        <div>
+          <label style="display:block; font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; color:var(--text-muted); text-align:left;">
+            Quick Switch Active Persona (1-Click Login)
+          </label>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <div class="preset-persona-card" onclick="quickSwitchUser('Facility Director', 'Regional Grid Admin', 'director@thermalmatch.internal', 'FD', event)">
+              <div class="persona-icon-circle" style="background:rgba(6, 182, 212, 0.15); color:var(--primary-cyan);">FD</div>
+              <div class="persona-info">
+                <strong>Facility Director</strong>
+                <span>Regional Grid Admin</span>
+              </div>
+            </div>
+
+            <div class="preset-persona-card" onclick="quickSwitchUser('Plant Manager', 'Company A (Data Center)', 'plant.a@thermalmatch.internal', 'PM', event)">
+              <div class="persona-icon-circle" style="background:rgba(249, 115, 22, 0.15); color:#f97316;">PM</div>
+              <div class="persona-info">
+                <strong>Plant Manager</strong>
+                <span>Company A (Data Center)</span>
+              </div>
+            </div>
+
+            <div class="preset-persona-card" onclick="quickSwitchUser('Smelting Lead', 'Company B (Foundry)', 'smelting.b@thermalmatch.internal', 'SL', event)">
+              <div class="persona-icon-circle" style="background:rgba(239, 68, 68, 0.15); color:#ef4444;">SL</div>
+              <div class="persona-info">
+                <strong>Smelting Lead</strong>
+                <span>Company B (Foundry)</span>
+              </div>
+            </div>
+
+            <div class="preset-persona-card" onclick="quickSwitchUser('Chemical Director', 'Company D (Chemicals)', 'chem.d@thermalmatch.internal', 'CD', event)">
+              <div class="persona-icon-circle" style="background:rgba(168, 85, 247, 0.15); color:#a855f7;">CD</div>
+              <div class="persona-info">
+                <strong>Chemical Director</strong>
+                <span>Company D (Chemicals)</span>
+              </div>
+            </div>
+
+            <div class="preset-persona-card" onclick="quickSwitchUser('Agro Operations', 'Company F (Greenhouses)', 'agro.f@thermalmatch.internal', 'AO', event)">
+              <div class="persona-icon-circle" style="background:rgba(16, 185, 129, 0.15); color:#10b981;">AO</div>
+              <div class="persona-info">
+                <strong>Agro Operations</strong>
+                <span>Company F (Greenhouses)</span>
+              </div>
+            </div>
+
+            <div class="preset-persona-card" onclick="quickSwitchUser('ESG & Carbon Auditor', 'District Sustainability', 'esg.auditor@thermalmatch.internal', 'EA', event)">
+              <div class="persona-icon-circle" style="background:rgba(20, 184, 166, 0.15); color:#14b8a6;">EA</div>
+              <div class="persona-info">
+                <strong>ESG Auditor</strong>
+                <span>Carbon Credits Ledger</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:12px; margin: 4px 0;">
+          <div style="flex:1; height:1px; background:rgba(255,255,255,0.08);"></div>
+          <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600; text-transform:uppercase;">or Custom User Login</span>
+          <div style="flex:1; height:1px; background:rgba(255,255,255,0.08);"></div>
+        </div>
+
+        <!-- Custom Login Form -->
+        <form id="custom-login-form" onsubmit="handleCustomLogin(event)" style="display: flex; flex-direction: column; gap: 0.85rem;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem;">
+            <div class="form-group-field">
+              <label style="display:block; font-size:0.75rem; font-weight:600; margin-bottom:4px; color:#0f172a; text-align:left;">Full Name / User Name <span style="color:#ef4444;">*</span></label>
+              <input type="text" id="login-input-name" class="modal-input-field" placeholder="e.g. Mohit B" required>
+            </div>
+            <div class="form-group-field">
+              <label style="display:block; font-size:0.75rem; font-weight:600; margin-bottom:4px; color:#0f172a; text-align:left;">Corporate Role <span style="color:#ef4444;">*</span></label>
+              <select id="login-input-role" class="modal-input-field">
+                <option value="Facility Director">Facility Director</option>
+                <option value="Plant Manager">Plant Manager</option>
+                <option value="Thermal Systems Engineer">Thermal Systems Engineer</option>
+                <option value="Operations Lead">Operations Lead</option>
+                <option value="ESG & Carbon Auditor">ESG & Carbon Auditor</option>
+                <option value="Company Lead">Company Lead</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem;">
+            <div class="form-group-field">
+              <label style="display:block; font-size:0.75rem; font-weight:600; margin-bottom:4px; color:#0f172a; text-align:left;">Assigned Facility / Entity</label>
+              <select id="login-input-company" class="modal-input-field">
+                <option value="Regional Corridor Authority">Regional Corridor Authority</option>
+                <option value="Company A">Company A (Data Center)</option>
+                <option value="Company B">Company B (Heavy Foundry)</option>
+                <option value="Company C">Company C (Glass Works)</option>
+                <option value="Company D">Company D (Petrochemicals)</option>
+                <option value="Company E">Company E (Distillation)</option>
+                <option value="Company F">Company F (Greenhouses)</option>
+                <option value="Company G">Company G (Grain Silos)</option>
+                <option value="Company H">Company H (District Loop)</option>
+                <option value="Company I">Company I (Chemical Complex)</option>
+                <option value="Company J">Company J (Packaging Mills)</option>
+              </select>
+            </div>
+            <div class="form-group-field">
+              <label style="display:block; font-size:0.75rem; font-weight:600; margin-bottom:4px; color:#0f172a; text-align:left;">Corporate Email</label>
+              <input type="email" id="login-input-email" class="modal-input-field" placeholder="mohit@thermalmatch.internal">
+            </div>
+          </div>
+
+          <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:0.5rem; padding-top:0.75rem; border-top:1px solid #f1f5f9;">
+            <button type="button" class="btn-clean-ghost" onclick="closeLoginModal()" style="padding:8px 16px; border-radius:6px; border:1px solid #cbd5e1; background:transparent; color:#475569; cursor:pointer;">Cancel</button>
+            <button type="submit" id="btn-submit-login" class="btn-primary-blue-full" style="width:auto; padding:8px 22px; cursor:pointer;">Sign In / Change User</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/aws-exports.js"></script>
+  <script src="/static/app.js?v=14"></script>
+</body>
+</html>
